@@ -1,0 +1,21 @@
+# D:\XAMPP\HTDOCS\PHONGTROQN\public\.htaccess
+
+RewriteEngine On
+RewriteBase /PHONGTROQN/public/
+
+# Nếu là file hoặc thư mục thật tồn tại (css, js, ảnh, uploads) → cho truy cập bình thường
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Tất cả request còn lại → đẩy về index.php (Front Controller Pattern)
+RewriteRule ^ index.php [QSA,L]
+
+# Chặn liệt kê thư mục
+Options -Indexes
+
+# Chặn truy cập file .php trực tiếp (trừ index.php)
+RewriteCond %{THE_REQUEST} \s/+.*\.php[\s?] [NC]
+RewriteRule ^ - [F,L]
+
+# (Tùy chọn) Ẩn extension .php và làm URL sạch hơn nếu bạn muốn
+# RewriteRule ^([^\.]+)$ $1.php [NC,L]
