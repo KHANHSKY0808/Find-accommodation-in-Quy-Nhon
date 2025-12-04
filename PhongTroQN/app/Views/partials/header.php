@@ -32,7 +32,7 @@
 					<?= htmlspecialchars($u['HoTen']) ?> 
 				</div>
                 <div class="dropdown">
-                    <a href="<?= BASE_URL ?>/ho-so"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
+                    <a href="<?= BASE_URL ?>/tai-khoan"><i class="fas fa-user-cog"></i> Quản lý tài khoản</a>
                     <a href="<?= BASE_URL ?>/tin-cua-toi"><i class="fas fa-list-alt"></i> Quản lý tin đăng</a>
                     <a href="<?= BASE_URL ?>/tin-dang/tao"><i class="fas fa-plus-circle"></i> Đăng tin mới</a>
                     <hr>

@@ -82,4 +82,76 @@ class User
         $stmt = query($sql, [':id' => $id]);
         return $stmt->fetch();
     }
+
+    // 2. CÁC METHOD MỚI – BỔ SUNG CHO QUẢN LÝ TÀI KHOẢN
+    // ===================================================================
+
+    // Cập nhật họ tên
+    public function updateName($userId, $hoTen)
+    {
+        $sql = "UPDATE user SET HoTen = :hoten WHERE UserID = :id";
+        $stmt = query($sql, [
+            ':hoten' => trim($hoTen),
+            ':id'    => $userId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Cập nhật số điện thoại
+    public function updatePhone($userId, $phone)
+    {
+        $sql = "UPDATE user SET SoDienThoai = :phone WHERE UserID = :id";
+        $stmt = query($sql, [
+            ':phone' => $phone,
+            ':id'    => $userId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Kiểm tra số điện thoại đã tồn tại chưa (loại trừ chính user đang sửa)
+    public function phoneExistsExcept($phone, $excludeUserId)
+    {
+        $sql = "SELECT UserID FROM user WHERE SoDienThoai = :phone AND UserID != :id LIMIT 1";
+        $stmt = query($sql, [
+            ':phone' => $phone,
+            ':id'    => $excludeUserId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Cập nhật mật khẩu
+    public function updatePassword($userId, $newPassword)
+    {
+        $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
+        $sql = "UPDATE user SET MatKhau = :pass WHERE UserID = :id";
+        $stmt = query($sql, [
+            ':pass' => $hashed,
+            ':id'   => $userId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Cập nhật địa chỉ (nếu cần sau này)
+    public function updateAddress($userId, $address)
+    {
+        $sql = "UPDATE user SET DiaChi = :addr WHERE UserID = :id";
+        $stmt = query($sql, [
+            ':addr' => $address,
+            ':id'   => $userId
+        ]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Lấy danh sách bài đăng của user (dùng ở trang cá nhân sau này)
+    public function getPostsByUser($userId, $limit = 20)
+    {
+        $sql = "SELECT p.*, COUNT(h.HinhID) as total_images 
+                FROM post p 
+                LEFT JOIN hinhanh h ON p.PostID = h.PostID 
+                WHERE p.UserID = :id AND p.TrangThai = 1 
+                GROUP BY p.PostID 
+                ORDER BY p.NgayDang DESC 
+                LIMIT :limit";
+        return query($sql, [':id' => $userId, ':limit' => $limit])->fetchAll();
+    }
 }

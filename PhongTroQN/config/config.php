@@ -15,7 +15,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 
 // ==== CẤU HÌNH URL ====
-define('BASE_URL', 'http://localhost/PhongTroQN/public');
+define('BASE_URL', '/PhongTroQN/public');
 define('ASSETS_URL', BASE_URL . '/assets');
 define('UPLOADS_URL', BASE_URL . '/../uploads');
 define('UPLOADS_PATH', __DIR__ . '/../uploads');

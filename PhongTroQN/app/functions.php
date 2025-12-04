@@ -87,5 +87,10 @@ match (true) {
 
     $uri === '/admin'                                    => (new AdminController)->index(),
 
+     // Thêm vào cuối phần match (trước default)
+    $uri === '/tai-khoan'         => (new UserController)->profile(),
+    $uri === '/tai-khoan/cap-nhat' => (new UserController)->updateProfile(),
+    $uri === '/tai-khoan/doi-sdt'  => (new UserController)->changePhone(),
+    $uri === '/tai-khoan/doi-mat-khau' => (new UserController)->changePassword(),
     default                                              => view('errors/404'),
 };
