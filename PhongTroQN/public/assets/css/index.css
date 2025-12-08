@@ -1,0 +1,274 @@
+/* Nền chung của toàn trang */
+body {
+    background-color: #e6f2ff; /* xanh dương nhạt */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header thông tin trên cùng */
+.header-info {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #ffffff; /* nền trắng */
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 12px; /* bo góc */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Container bài đăng */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Các card bài đăng */
+.post-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff; /* nền trắng */
+    border-radius: 12px; /* bo góc */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Hình ảnh bài đăng */
+.post-image img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+/* Tiêu đề bài đăng */
+.post-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 15px;
+}
+
+/* Giá */
+.post-price {
+    font-size: 1rem;
+    color: #ff6600;
+    padding: 0 15px 10px 15px;
+}
+
+/* Thông tin diện tích và địa chỉ */
+.post-info {
+    font-size: 0.9rem;
+    color: #555;
+    padding: 0 15px 10px 15px;
+}
+
+/* Thông tin người đăng */
+.post-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+}
+
+.post-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.post-user .btn-call {
+    background-color: #0073e6;
+    color: #fff;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.post-user .heart {
+    font-size: 1.2rem;
+    color: red;
+    margin-left: 10px;
+}
+
+/* Footer card gộp 1 ô trắng */
+.footer-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+/* Tiêu đề và sub-title */
+.footer-card h2, .footer-card h3 {
+    color: #0073e6;
+    margin-top: 20px;
+}
+
+.footer-card p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.footer-card ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    color: #555;
+}
+
+.footer-card ul li {
+    margin-bottom: 8px;
+}
+
+
+/* Thống kê */
+.stats .stat-items {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+    background-color: #f0f8ff;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 10px;
+    flex: 1 1 200px;
+}
+
+.stat-item .number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0073e6;
+}
+
+.stat-item .label {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* ================== GRID HIỂN THỊ BÀI ĐĂNG - THÊM MỚI ================== */
+.posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 10px;
+}
+
+/* Tablet: 2 cột */
+@media (min-width: 640px) {
+    .posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop nhỏ: 3 cột */
+@media (min-width: 992px) {
+    .posts-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Desktop lớn: 4 cột (rất đẹp khi màn hình rộng) */
+@media (min-width: 1280px) {
+    .posts-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Cải thiện một chút cho card khi ở dạng lưới */
+.post-card {
+    height: 100%;                    /* Card chiếm full chiều cao trong ô lưới */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+
+/* Đảm bảo ảnh không bị méo */
+.post-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.post-image img {
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.post-card:hover .post-image img {
+    transform: scale(1.05);
+}
+
+/* Nội dung bên trong card co giãn đều */
+.post-title {
+    flex-grow: 1;                     /* Tiêu đề chiếm khoảng trống còn lại */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+/* Nút Gọi ngay đẹp hơn khi hover */
+.btn-call:hover {
+    background-color: #005bb5 !important;
+    transform: scale(1.05);
+}
+
+/* GRID RESPONSIVE - BẮT BUỘC THÊM */
+.posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 10px;
+}
+@media (min-width: 640px) { 
+    .posts-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 992px) { 
+    .posts-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1280px) { 
+    .posts-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Cải thiện card khi ở dạng lưới */
+.post-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+.post-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+.post-image img {
+    transition: transform 0.4s ease;
+}
+.post-card:hover .post-image img {
+    transform: scale(1.06);
+}
+.post-title {
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
