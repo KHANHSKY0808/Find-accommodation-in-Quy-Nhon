@@ -7,6 +7,14 @@ require_once __DIR__ . '/../partials/header.php';
 <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/index.css?v=<?= time() ?>">
 <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/post-detail-modal.css?v=<?= time() ?>">
 
+<!-- Hiển thị thông báo thành công -->
+<?php if (isset($_SESSION['success_message'])): ?>
+  <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 6px; margin: 20px auto; max-width: 1200px; border: 1px solid #c3e6cb;">
+    ✓ <?= htmlspecialchars($_SESSION['success_message']) ?>
+  </div>
+  <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
 <!-- Header info -->
 <div class="header-info">
     <h1>Kênh thông tin Phòng Trọ số 1 Quy Nhơn</h1>
@@ -62,11 +70,14 @@ require_once __DIR__ . '/../partials/header.php';
                             <b><?= htmlspecialchars($row['TenNguoiDang']) ?></b><br>
                             <small><?= date("d/m/Y", strtotime($row['NgayDang'])) ?></small>
                         </div>
-                        <?php if (!empty($row['SoDienThoai'])): ?>
-                            <a href="tel:<?= $row['SoDienThoai'] ?>" class="btn-call" onclick="event.stopPropagation();">Gọi ngay</a>
-                        <?php else: ?>
-                            <span class="btn-call" style="background:#ccc;cursor:not-allowed;">Liên hệ</span>
-                        <?php endif; ?>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <?php if (!empty($row['SoDienThoai'])): ?>
+                                <a href="tel:<?= $row['SoDienThoai'] ?>" class="btn-call" onclick="event.stopPropagation();">Gọi ngay</a>
+                            <?php else: ?>
+                                <span class="btn-call" style="background:#ccc;cursor:not-allowed;">Liên hệ</span>
+                            <?php endif; ?>
+                            <button class="btn-call btn-report-action" onclick="handleReport(event, <?= $row['PostID'] ?>, '<?= addslashes(htmlspecialchars($row['TieuDe'])) ?>')">Báo cáo</button>
+                        </div>
                         <span class="heart" onclick="event.stopPropagation();">Heart</span>
                     </div>
                 </div>
@@ -108,6 +119,10 @@ require_once __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
+<?php
+// QUAN TRỌNG: GỌI FOOTER Ở ĐÂY!!!
+require __DIR__ . '/../partials/footer.php';
+?>
 
 <!-- ======================== MODAL CHI TIẾT PHÒNG TRỌ ======================== -->
 <div id="detailModal" class="detail-modal">
@@ -267,10 +282,231 @@ $('.btn-copy').on('click', function() {
     }
 });
 
+// === Hàm hiển thị thông báo ===
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Hiện thông báo
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Tự động ẩn sau 4 giây
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
 // === Mở modal từ card ===
 $(document).on('click', '.post-card-modal', function(e) {
-    if ($(e.target).closest('.btn-call, .heart').length) return;
+    if ($(e.target).closest('.btn-call, .heart, .btn-report-action').length) return;
     const data = JSON.parse(atob(this.dataset.post));
     openDetailModal(data);
 });
+
+// === Xử lý báo cáo ===
+function handleReport(event, postID, postTitle) {
+    event.stopPropagation();
+    
+    // Kiểm tra đã đăng nhập
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        if (!confirm('Bạn cần đăng nhập để báo cáo tin. Bạn có muốn đăng nhập không?')) {
+            return;
+        }
+        window.location.href = '<?= BASE_URL ?>/index.php?page=dang-nhap';
+        return;
+    <?php endif; ?>
+    
+    openReportModal(event, postID, postTitle);
+}
+
+function openReportModal(event, postID, postTitle) {
+    event.stopPropagation();
+    document.getElementById('reportPostID').value = postID;
+    document.getElementById('reportPostTitle').textContent = postTitle;
+    document.getElementById('reportModal').style.display = 'block';
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+
+// Đóng modal khi click bên ngoài
+window.onclick = function(event) {
+    let modal = document.getElementById('reportModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
 </script>
+
+<!-- CSS cho nút báo cáo -->
+<style>
+.btn-report-action {
+    background: #dc3545 !important;
+    color: white !important;
+}
+
+.btn-report-action:hover {
+    background: #c82333 !important;
+}
+
+/* Thông báo (Notification Toast) */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    max-width: 400px;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-success {
+    background: #28a745;
+}
+
+.notification-error {
+    background: #dc3545;
+}
+
+.notification-info {
+    background: #17a2b8;
+}
+
+/* Modal báo cáo */
+#reportModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.report-modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.report-modal-content h2 {
+    color: #dc3545;
+    margin-top: 0;
+}
+
+.report-modal-content label {
+    display: block;
+    margin: 15px 0 5px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.report-modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    resize: vertical;
+    min-height: 120px;
+    box-sizing: border-box;
+}
+
+.report-modal-content textarea:focus {
+    outline: none;
+    border-color: #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.3);
+}
+
+.report-button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.report-button-group button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.report-button-group .btn-submit {
+    background: #dc3545;
+    color: white;
+}
+
+.report-button-group .btn-submit:hover {
+    background: #c82333;
+}
+
+.report-button-group .btn-cancel {
+    background: #6c757d;
+    color: white;
+}
+
+.report-button-group .btn-cancel:hover {
+    background: #5a6268;
+}
+
+.close-report {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-report:hover {
+    color: #000;
+}
+</style>
+
+<!-- Modal báo cáo HTML -->
+<div id="reportModal">
+    <div class="report-modal-content">
+        <span class="close-report" onclick="closeReportModal()">&times;</span>
+        <h2>Báo cáo tin đăng</h2>
+        
+        <p>Tin đăng: <strong id="reportPostTitle"></strong></p>
+        
+        <form method="POST" action="<?= BASE_URL ?>/index.php?page=bao-cao" id="reportForm">
+            <input type="hidden" id="reportPostID" name="postID">
+            
+            <label for="reportReason">Lý do báo cáo *</label>
+            <textarea id="reportReason" name="reason" placeholder="Vui lòng mô tả lý do báo cáo (lừa đảo, hình ảnh không đúng, liên hệ không được, v.v...)" required></textarea>
+            
+            <div class="report-button-group">
+                <button type="button" class="btn-cancel" onclick="closeReportModal()">Hủy</button>
+                <button type="submit" class="btn-submit">Gửi báo cáo</button>
+            </div>
+        </form>
+    </div>
+</div>

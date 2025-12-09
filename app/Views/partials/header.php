@@ -24,7 +24,11 @@
         <a href="#"><i class="far fa-heart"></i> Tin đã lưu</a>
 
         <?php if (isset($_SESSION['user'])): $u = $_SESSION['user']; ?>
-            <a href="<?= BASE_URL ?>/quan-ly" class="btn-manage">Quản lý</a>
+            <?php if ($u['IsAdmin'] == 1): ?>
+                <a href="<?= BASE_URL ?>/index.php?page=admin" class="btn-manage">🔐 Admin Dashboard</a>
+            <?php else: ?>
+                <a href="<?= BASE_URL ?>/quan-ly" class="btn-manage">Quản lý</a>
+            <?php endif; ?>
 
             <div class="user-menu">
                 <div class="user-info">

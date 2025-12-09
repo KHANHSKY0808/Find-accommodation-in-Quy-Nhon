@@ -63,6 +63,11 @@ $uri = str_replace('/index.php', '', $uri);     // thêm dòng này
 $uri = rtrim($uri, '/');                        // bỏ dấu / cuối
 $uri = $uri === '' ? '/' : $uri;                // nếu rỗng thì là trang chủ
 
+// HOẶC dùng query string nếu .htaccess không hoạt động
+if (isset($_GET['page'])) {
+    $uri = '/' . trim($_GET['page'], '/');
+}
+
 if (preg_match('#^/sua-tin/(\d+)$#', $uri, $m)) {
     $_GET['id'] = $m[1];                    // ← THÊM DÒNG NÀY LÀ XONG!!!
     (new PostController)->edit($m[1]);
@@ -93,7 +98,11 @@ match (true) {
 	$uri === '/tin-cua-toi'                 => (new PostController)->myPosts(),
 	$uri === '/cap-nhat-tin'                => (new PostController)->update(),
 
+    $uri === '/bao-cao'                    => (new PostController)->report(),
+
     $uri === '/admin'                                    => (new AdminController)->index(),
+    $uri === '/admin/reports'                            => (new AdminController)->manageReports(),
+    $uri === '/admin/users'                              => (new AdminController)->users(),
 
      // Thêm vào cuối phần match (trước default)
     $uri === '/tai-khoan'         => (new UserController)->profile(),

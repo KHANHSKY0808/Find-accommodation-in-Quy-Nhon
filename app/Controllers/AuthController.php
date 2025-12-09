@@ -90,12 +90,13 @@ class AuthController
                     $_SESSION['user_name'] = $user['HoTen'];
                     $_SESSION['email']     = $user['email'];
                     $_SESSION['is_admin']  = (int)$user['IsAdmin']; // Quan trọng!
+                    $_SESSION['user']      = $user; // Thêm dòng này để header.php có thể truy cập
 
                     $_SESSION['success'] = "Chào mừng trở lại, " . $user['HoTen'] . "!";
 
                     // Nếu là Admin → vào trang admin
                     if ((int)$user['IsAdmin'] === 1) {
-                        redirect('/admin');
+                        redirect('/index.php?page=admin');
                     } else {
                         // Người dùng thường → về trang chủ
                         redirect('/');
@@ -112,17 +113,13 @@ class AuthController
     }
 
     // ==================== ĐĂNG XUẤT ====================
-// ==================== ĐĂNG XUẤT ====================
     public function logout()
     {
         session_start();
         session_unset();
         session_destroy();
 
-        // QUAN TRỌNG: Phải redirect về đúng file router (có /public/)
-        redirect('/public/index.php');
-        // hoặc an toàn hơn nữa:
-        // header('Location: ' . BASE_URL . 'public/index.php');
-        // exit;
+        // Redirect về trang chủ
+        redirect('/index.php');
     }
 }

@@ -155,7 +155,9 @@ $totalPosts     = query("SELECT COUNT(*) FROM post")->fetchColumn();
 $todayPosts     = query("SELECT COUNT(*) FROM post WHERE DATE(NgayDang) = CURDATE()")->fetchColumn();
 $totalUsers     = query("SELECT COUNT(*) FROM user WHERE IsAdmin = 0")->fetchColumn();
 $todayUsers     = query("SELECT COUNT(*) FROM user WHERE DATE(created_at) = CURDATE() AND IsAdmin = 0")->fetchColumn();
+$totalReports   = query("SELECT COUNT(*) FROM baocao")->fetchColumn();
 $pendingReports = query("SELECT COUNT(*) FROM baocao WHERE DaXuLy = 0")->fetchColumn();
+$resolvedReports = query("SELECT COUNT(*) FROM baocao WHERE DaXuLy = 1")->fetchColumn();
 
 // Tin mới nhất (sử dụng fetchAll cho SELECT nhiều cột)
 $stmt = query("SELECT p.PostID, p.TieuDe, u.HoTen, p.NgayDang 
@@ -168,11 +170,11 @@ $recentPosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <div class="sidebar">
     <h2>Quản Trị Viên</h2>
-    <a href="#" class="active">Tổng quan</a>
-    <a href="#">Quản lý người dùng</a>
+    <a href="<?= BASE_URL ?>/index.php?page=admin" class="active">Tổng quan</a>
+    <a href="<?= BASE_URL ?>/index.php?page=admin/users">Quản lý người dùng</a>
     <a href="#">Quản lý tin đăng</a>
-    <a href="#">Quản lý báo cáo</a>
-    <a href="<?= BASE_URL ?>">Về trang chủ</a>
+    <a href="<?= BASE_URL ?>/index.php?page=admin/reports">Quản lý báo cáo</a>
+    <a href="<?= BASE_URL ?>/index.php">Về trang chủ</a>
 
   </div>
 
@@ -192,8 +194,12 @@ $recentPosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p>Người dùng mới hôm nay / Tổng người dùng</p>
       </div>
       <div class="card">
-        <h3><?= $pendingReports ?></h3>
-        <p>Báo cáo chưa xử lý</p>
+        <h3><?= $pendingReports ?> / <?= $totalReports ?></h3>
+        <p>Báo cáo chưa xử lý / Tổng báo cáo</p>
+      </div>
+      <div class="card">
+        <h3><?= $resolvedReports ?></h3>
+        <p>Báo cáo đã xử lý</p>
       </div>
     </div>
 

@@ -189,5 +189,62 @@ public function delete($id)
         die("Không thể xóa tin này (có thể không phải của bạn).");
     }
     $stmt->close();
-}
+    }
+
+    // ==================== BÁO CÁO TIN ĐĂNG ====================
+    public function report()
+    {
+        // Khởi động session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Kiểm tra POST request
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(400);
+            echo 'error: POST required';
+            exit;
+        }
+
+        // Kiểm tra đã đăng nhập
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo 'error: Must login';
+            exit;
+        }
+
+        $postID = intval($_POST['postID'] ?? 0);
+        $reason = trim($_POST['reason'] ?? '');
+
+        // Validate
+        if ($postID <= 0 || empty($reason)) {
+            http_response_code(400);
+            echo 'error: Invalid data';
+            exit;
+        }
+
+        // Kiểm tra tin có tồn tại không
+        $checkStmt = query("SELECT PostID FROM post WHERE PostID = ?", [$postID]);
+        if ($checkStmt->rowCount() === 0) {
+            http_response_code(404);
+            echo 'error: Post not found';
+            exit;
+        }
+
+        // Lưu báo cáo vào database
+        try {
+            query(
+                "INSERT INTO baocao (UserID, PostID, NoiDung, DaXuLy) VALUES (?, ?, ?, 0)",
+                [$_SESSION['user_id'], $postID, $reason]
+            );
+            // Lưu message vào session
+            $_SESSION['success_message'] = 'Báo cáo đã được gửi tới admin. Cảm ơn bạn!';
+            // Redirect về trang chủ
+            redirect('/');
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo 'error: ' . $e->getMessage();
+        }
+        exit;
+    }
 }
